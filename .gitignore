@@ -1,6 +1,3 @@
-# Ignore sensitive files
-twilio-config.js
-
 # Ignore node modules
 node_modules/
 
