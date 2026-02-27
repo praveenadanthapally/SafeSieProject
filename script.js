@@ -35,6 +35,10 @@ const CURRENT_USER_KEY = 'safesie_current_user';
 
 // ==================== INITIALIZATION ====================
 document.addEventListener('DOMContentLoaded', function() {
+    // Check if Twilio script loaded
+    console.log('📱 Checking Twilio service...');
+    console.log('📱 window.TwilioService:', window.TwilioService);
+    
     // Load Twilio config
     loadTwilioConfig();
     
