@@ -35,6 +35,9 @@ const CURRENT_USER_KEY = 'safesie_current_user';
 
 // ==================== INITIALIZATION ====================
 document.addEventListener('DOMContentLoaded', function() {
+    // Load Twilio config
+    loadTwilioConfig();
+    
     // Check for saved session
     const savedUser = localStorage.getItem(CURRENT_USER_KEY);
     if (savedUser) {
@@ -50,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateStats();
     renderContacts();
     renderAlerts();
+    updateTwilioStatus();
 
     console.log('%c SafeSie ', 'background: linear-gradient(135deg, #6366f1, #ec4899); color: white; font-size: 24px; font-weight: bold; padding: 10px 20px; border-radius: 8px;');
     console.log('%c Voice-Activated. Intelligent. Always Ready. ', 'color: #6366f1; font-size: 14px;');
@@ -983,35 +987,74 @@ function viewSentMessages() {
     alert(`Last ${Math.min(10, sentMessages.length)} messages:\n\n${summary}`);
 }
 
-// Check Twilio setup status
-async function checkTwilioSetup() {
+// Twilio Config Modal Functions
+function openTwilioConfig() {
+    // Load saved credentials if any
+    const savedConfig = localStorage.getItem('safesie_twilio_config');
+    if (savedConfig) {
+        const config = JSON.parse(savedConfig);
+        document.getElementById('twilio-sid').value = config.sid || '';
+        document.getElementById('twilio-token').value = config.token || '';
+        document.getElementById('twilio-phone').value = config.phone || '';
+    }
+    document.getElementById('twilio-modal').classList.remove('hidden');
+}
+
+function closeTwilioConfig() {
+    document.getElementById('twilio-modal').classList.add('hidden');
+}
+
+function saveTwilioConfig(e) {
+    e.preventDefault();
+    
+    const config = {
+        sid: document.getElementById('twilio-sid').value.trim(),
+        token: document.getElementById('twilio-token').value.trim(),
+        phone: document.getElementById('twilio-phone').value.trim()
+    };
+    
+    // Save to localStorage (user's browser only)
+    localStorage.setItem('safesie_twilio_config', JSON.stringify(config));
+    
+    // Update Twilio service
+    if (window.TwilioService) {
+        window.TwilioService.config.ACCOUNT_SID = config.sid;
+        window.TwilioService.config.AUTH_TOKEN = config.token;
+        window.TwilioService.config.PHONE_NUMBER = config.phone;
+    }
+    
+    closeTwilioConfig();
+    showNotification('✅ Twilio credentials saved!', 'success');
+    updateTwilioStatus();
+}
+
+function updateTwilioStatus() {
     const statusEl = document.getElementById('twilio-status-text');
+    const savedConfig = localStorage.getItem('safesie_twilio_config');
     
-    if (!window.TwilioService) {
-        statusEl.textContent = 'Twilio service not loaded';
-        statusEl.style.color = 'var(--danger)';
-        return;
-    }
-    
-    if (window.TwilioService.config.ACCOUNT_SID === 'YOUR_TWILIO_ACCOUNT_SID') {
-        statusEl.textContent = 'Not configured - Edit twilio-config.js';
-        statusEl.style.color = 'var(--danger)';
-        showNotification('⚠️ Twilio not configured. Edit twilio-config.js file', 'error');
-        return;
-    }
-    
-    statusEl.textContent = 'Checking...';
-    
-    const status = await window.TwilioService.checkStatus();
-    
-    if (status.configured) {
-        statusEl.textContent = `✅ Active - Balance: ${status.balance} ${status.currency}`;
-        statusEl.style.color = 'var(--success)';
-        showNotification(`✅ Twilio connected! Balance: ${status.balance} ${status.currency}`, 'success');
+    if (savedConfig) {
+        const config = JSON.parse(savedConfig);
+        if (config.sid && config.token && config.phone) {
+            statusEl.textContent = `✅ Configured (${config.phone})`;
+            statusEl.style.color = 'var(--success)';
+        } else {
+            statusEl.textContent = '⚠️ Incomplete configuration';
+            statusEl.style.color = 'var(--danger)';
+        }
     } else {
-        statusEl.textContent = `❌ Error: ${status.error}`;
-        statusEl.style.color = 'var(--danger)';
-        showNotification(`❌ Twilio error: ${status.error}`, 'error');
+        statusEl.textContent = 'Not configured - Add credentials to enable real SMS';
+        statusEl.style.color = 'var(--gray)';
+    }
+}
+
+// Load Twilio config on startup
+function loadTwilioConfig() {
+    const savedConfig = localStorage.getItem('safesie_twilio_config');
+    if (savedConfig && window.TwilioService) {
+        const config = JSON.parse(savedConfig);
+        window.TwilioService.config.ACCOUNT_SID = config.sid || 'YOUR_TWILIO_ACCOUNT_SID';
+        window.TwilioService.config.AUTH_TOKEN = config.token || 'YOUR_TWILIO_AUTH_TOKEN';
+        window.TwilioService.config.PHONE_NUMBER = config.phone || 'YOUR_TWILIO_PHONE_NUMBER';
     }
 }
 

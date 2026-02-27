@@ -420,10 +420,10 @@
                     </div>
                     <div class="setting-item">
                         <div class="setting-info">
-                            <h4>Twilio SMS Status</h4>
-                            <p id="twilio-status-text">Check if Twilio is configured</p>
+                            <h4>Twilio SMS Configuration</h4>
+                            <p id="twilio-status-text">Add your Twilio credentials to enable real SMS</p>
                         </div>
-                        <button class="btn btn-secondary btn-sm" onclick="checkTwilioSetup()">Check</button>
+                        <button class="btn btn-secondary btn-sm" onclick="openTwilioConfig()">Configure</button>
                     </div>
                     <div class="setting-item">
                         <div class="setting-info">
@@ -508,6 +508,39 @@
                 <button class="btn btn-danger" onclick="cancelSOS()">Cancel</button>
                 <button class="btn btn-primary" onclick="sendAlertsNow()">Send Alerts Now</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Twilio Config Modal -->
+    <div id="twilio-modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeTwilioConfig()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Twilio Configuration</h3>
+                <button class="modal-close" onclick="closeTwilioConfig()">&times;</button>
+            </div>
+            <p style="margin-bottom: 16px; color: var(--gray-light);">Add your Twilio credentials to send real SMS. Your credentials are stored locally in your browser.</p>
+            <form id="twilio-form" onsubmit="saveTwilioConfig(event)">
+                <div class="form-group">
+                    <label>Account SID</label>
+                    <input type="text" id="twilio-sid" placeholder="AC1234567890abcdef..." required>
+                </div>
+                <div class="form-group">
+                    <label>Auth Token</label>
+                    <input type="password" id="twilio-token" placeholder="Your auth token..." required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" id="twilio-phone" placeholder="+1234567890" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeTwilioConfig()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Credentials</button>
+                </div>
+            </form>
+            <p style="margin-top: 16px; font-size: 0.8rem; color: var(--gray);">
+                Don't have Twilio? <a href="https://www.twilio.com/try-twilio" target="_blank" style="color: var(--primary-light);">Sign up free</a>
+            </p>
         </div>
     </div>
 
