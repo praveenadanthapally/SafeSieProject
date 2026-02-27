@@ -1,0 +1,12 @@
+# Ignore sensitive files
+twilio-config.js
+
+# Ignore node modules
+node_modules/
+
+# Ignore logs
+*.log
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
