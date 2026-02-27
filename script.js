@@ -1095,8 +1095,18 @@ function ensureTwilioConfigLoaded() {
 async function testTwilioSMS() {
     ensureTwilioConfigLoaded();
     
-    if (!window.TwilioService || window.TwilioService.config.ACCOUNT_SID === 'YOUR_TWILIO_ACCOUNT_SID') {
+    console.log('📱 Test SMS clicked');
+    console.log('📱 window.TwilioService exists:', !!window.TwilioService);
+    console.log('📱 ACCOUNT_SID:', window.TwilioService?.config?.ACCOUNT_SID);
+    
+    if (!window.TwilioService) {
+        showNotification('⚠️ Twilio service not loaded. Refresh the page.', 'error');
+        return;
+    }
+    
+    if (!window.TwilioService.config.ACCOUNT_SID || window.TwilioService.config.ACCOUNT_SID === 'YOUR_TWILIO_ACCOUNT_SID') {
         showNotification('⚠️ Twilio not configured. Click "Configure" first.', 'error');
+        console.log('📱 Current SID:', window.TwilioService.config.ACCOUNT_SID);
         return;
     }
     
