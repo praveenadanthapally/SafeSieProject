@@ -868,9 +868,19 @@ async function sendSMSToContacts(contacts, message) {
     
     console.log(`📱 Sending SMS to ${contacts.length} contacts`);
     
+    // Ensure Twilio config is loaded
+    ensureTwilioConfigLoaded();
+    
     // Try Twilio first, fallback to simulation
     let twilioResults = null;
-    if (window.TwilioService && window.TwilioService.config.ACCOUNT_SID !== 'YOUR_TWILIO_ACCOUNT_SID') {
+    const hasTwilioConfig = window.TwilioService && 
+                           window.TwilioService.config.ACCOUNT_SID && 
+                           window.TwilioService.config.ACCOUNT_SID !== 'YOUR_TWILIO_ACCOUNT_SID';
+    
+    console.log('📱 Twilio configured:', hasTwilioConfig);
+    console.log('📱 Account SID:', window.TwilioService?.config?.ACCOUNT_SID?.substring(0, 10) + '...');
+    
+    if (hasTwilioConfig) {
         try {
             showNotification('📱 Sending via Twilio...');
             twilioResults = await window.TwilioService.sendToContacts(contacts, message);
@@ -1049,12 +1059,64 @@ function updateTwilioStatus() {
 
 // Load Twilio config on startup
 function loadTwilioConfig() {
+    console.log('📱 Loading Twilio config...');
+    const savedConfig = localStorage.getItem('safesie_twilio_config');
+    
+    if (savedConfig) {
+        const config = JSON.parse(savedConfig);
+        console.log('📱 Found saved Twilio config:', config.sid ? 'Yes' : 'No');
+        
+        if (window.TwilioService) {
+            window.TwilioService.config.ACCOUNT_SID = config.sid || 'YOUR_TWILIO_ACCOUNT_SID';
+            window.TwilioService.config.AUTH_TOKEN = config.token || 'YOUR_TWILIO_AUTH_TOKEN';
+            window.TwilioService.config.PHONE_NUMBER = config.phone || 'YOUR_TWILIO_PHONE_NUMBER';
+            console.log('📱 Twilio config loaded into service');
+        } else {
+            console.log('⚠️ TwilioService not available yet');
+        }
+    } else {
+        console.log('📱 No Twilio config found in localStorage');
+    }
+}
+
+// Ensure Twilio config is loaded (call after TwilioService is available)
+function ensureTwilioConfigLoaded() {
     const savedConfig = localStorage.getItem('safesie_twilio_config');
     if (savedConfig && window.TwilioService) {
         const config = JSON.parse(savedConfig);
-        window.TwilioService.config.ACCOUNT_SID = config.sid || 'YOUR_TWILIO_ACCOUNT_SID';
-        window.TwilioService.config.AUTH_TOKEN = config.token || 'YOUR_TWILIO_AUTH_TOKEN';
-        window.TwilioService.config.PHONE_NUMBER = config.phone || 'YOUR_TWILIO_PHONE_NUMBER';
+        window.TwilioService.config.ACCOUNT_SID = config.sid;
+        window.TwilioService.config.AUTH_TOKEN = config.token;
+        window.TwilioService.config.PHONE_NUMBER = config.phone;
+        console.log('📱 Twilio config ensured:', config.phone);
+    }
+}
+
+// Test Twilio SMS
+async function testTwilioSMS() {
+    ensureTwilioConfigLoaded();
+    
+    if (!window.TwilioService || window.TwilioService.config.ACCOUNT_SID === 'YOUR_TWILIO_ACCOUNT_SID') {
+        showNotification('⚠️ Twilio not configured. Click "Configure" first.', 'error');
+        return;
+    }
+    
+    const testNumber = prompt('Enter phone number to test (with country code, e.g., +919876543210):');
+    if (!testNumber) return;
+    
+    showNotification('📱 Sending test SMS...');
+    
+    try {
+        const result = await window.TwilioService.sendSMS(testNumber, '📱 SafeSie Test: This is a test message from your SafeSie app.');
+        
+        if (result.success) {
+            showNotification('✅ Test SMS sent successfully!', 'success');
+        } else {
+            showNotification('❌ Failed: ' + result.error, 'error');
+            console.error('Twilio error:', result);
+        }
+    } catch (err) {
+        showNotification('❌ Error: ' + err.message, 'error');
+        console.error('Test SMS error:', err);
     }
 }
 
