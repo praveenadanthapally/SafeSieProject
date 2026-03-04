@@ -8,6 +8,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Theme Color for Mobile -->
+    <meta name="theme-color" content="#6366f1">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    
+    <!-- Mobile Web App Capable -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SafeSie">
 </head>
 <body>
     <!-- Landing Page -->
@@ -554,5 +568,32 @@
 
     <script src="twilio-config.js?v=2"></script>
     <script src="script.js?v=2"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then((registration) => {
+                        console.log('✅ SafeSie PWA: Service Worker registered');
+                        
+                        // Request background sync permission
+                        if ('sync' in registration) {
+                            console.log('✅ SafeSie PWA: Background sync available');
+                        }
+                        
+                        // Request push notification permission
+                        if ('PushManager' in window) {
+                            console.log('✅ SafeSie PWA: Push notifications available');
+                        }
+                    })
+                    .catch((err) => {
+                        console.log('❌ SafeSie PWA: Service Worker registration failed', err);
+                    });
+            });
+        } else {
+            console.log('⚠️ SafeSie PWA: Service Workers not supported');
+        }
+    </script>
 </body>
 </html>
