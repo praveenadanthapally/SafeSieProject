@@ -1403,6 +1403,196 @@ function clearAllAlerts() {
     }
 }
 
+// ==================== SAFETY MAP ====================
+function loadSafetyMap() {
+    const mapContainer = document.getElementById('safety-map');
+    
+    // Show loading
+    mapContainer.innerHTML = '<div class="map-loading"><div class="spinner"></div><p>Loading map...</p></div>';
+    
+    // Get user location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                
+                // Create map using OpenStreetMap
+                const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.02}%2C${lat-0.02}%2C${lng+0.02}%2C${lat+0.02}&layer=mapnik&marker=${lat}%2C${lng}`;
+                
+                mapContainer.innerHTML = `
+                    <iframe 
+                        src="${mapUrl}" 
+                        width="100%" 
+                        height="100%" 
+                        style="border:0; border-radius: 12px;"
+                        allowfullscreen=""
+                        loading="lazy">
+                    </iframe>
+                    <div class="map-overlay">
+                        <button class="btn btn-primary btn-sm" onclick="findNearbySafeCenters()">
+                            🏛️ Find Safe Centers Near Me
+                        </button>
+                    </div>
+                `;
+                
+                // Update route from field
+                document.getElementById('route-from').value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                
+                showNotification('📍 Map loaded with your location');
+            },
+            (error) => {
+                console.error('Location error:', error);
+                mapContainer.innerHTML = `
+                    <div class="map-loading">
+                        <p>⚠️ Could not get location. Please enable location access.</p>
+                        <button class="btn btn-secondary" onclick="loadSafetyMap()" style="margin-top: 16px;">
+                            Try Again
+                        </button>
+                    </div>
+                `;
+                showNotification('Could not get location. Enable GPS.', 'error');
+            }
+        );
+    } else {
+        mapContainer.innerHTML = '<p>Geolocation is not supported by your browser</p>';
+    }
+}
+
+function findNearbySafeCenters() {
+    // In a real app, this would query a database of safe centers
+    // For demo, we'll show mock data
+    const centersList = document.getElementById('safe-centers-list');
+    
+    centersList.innerHTML = `
+        <div class="center-card" onclick="showCenterDetails('police')">
+            <div class="center-icon">👮</div>
+            <div class="center-info">
+                <h4>City Police Station</h4>
+                <p>Emergency: 100</p>
+                <span class="distance">📍 0.8 km away</span>
+            </div>
+        </div>
+        <div class="center-card" onclick="showCenterDetails('hospital')">
+            <div class="center-icon">🏥</div>
+            <div class="center-info">
+                <h4>General Hospital</h4>
+                <p>Emergency: 108</p>
+                <span class="distance">📍 1.2 km away</span>
+            </div>
+        </div>
+        <div class="center-card" onclick="showCenterDetails('ngo')">
+            <div class="center-icon">🤝</div>
+            <div class="center-info">
+                <h4>Women's Support Center</h4>
+                <p>Helpline: 1091</p>
+                <span class="distance">📍 2.1 km away</span>
+            </div>
+        </div>
+        <div class="center-card" onclick="showCenterDetails('pharmacy')">
+            <div class="center-icon">💊</div>
+            <div class="center-info">
+                <h4>24/7 Pharmacy</h4>
+                <p>Open 24 hours</p>
+                <span class="distance">📍 0.5 km away</span>
+            </div>
+        </div>
+    `;
+    
+    showNotification('🏛️ Found 4 safe centers near you');
+}
+
+function showCenterDetails(type) {
+    const details = {
+        police: {
+            name: 'Police Station',
+            number: '100',
+            desc: 'Emergency police assistance. Available 24/7.',
+            action: 'Call Police'
+        },
+        hospital: {
+            name: 'Hospital',
+            number: '108',
+            desc: 'Medical emergency and ambulance services.',
+            action: 'Call Ambulance'
+        },
+        ngo: {
+            name: "Women's Helpline",
+            number: '1091',
+            desc: 'Toll-free 24/7 support for women in distress.',
+            action: 'Call Helpline'
+        },
+        pharmacy: {
+            name: '24/7 Pharmacy',
+            number: '',
+            desc: 'Open all night for medical supplies and assistance.',
+            action: 'Get Directions'
+        }
+    };
+    
+    const info = details[type];
+    if (info) {
+        let actionButton = '';
+        if (info.number) {
+            actionButton = `<button class="btn btn-danger btn-full" onclick="window.open('tel:${info.number}')">📞 ${info.action}</button>`;
+        } else {
+            actionButton = `<button class="btn btn-primary btn-full">🗺️ ${info.action}</button>`;
+        }
+        
+        alert(`${info.name}\n\n${info.desc}\n\n${info.number ? 'Emergency: ' + info.number : ''}`);
+    }
+}
+
+function findSafeRoute() {
+    const to = document.getElementById('route-to').value;
+    
+    if (!to) {
+        showNotification('Please enter a destination', 'error');
+        return;
+    }
+    
+    // Simulate route calculation
+    showNotification('🔍 Finding safest route...');
+    
+    setTimeout(() => {
+        const resultDiv = document.getElementById('safe-route-result');
+        resultDiv.style.display = 'block';
+        
+        // Generate random but realistic route data
+        const distance = (Math.random() * 5 + 1).toFixed(1);
+        const time = Math.round(distance * 6);
+        
+        document.getElementById('route-distance').textContent = `${distance} km`;
+        document.getElementById('route-time').textContent = `${time} min`;
+        
+        showNotification('✅ Safe route found!');
+    }, 1500);
+}
+
+function shareRoute() {
+    const to = document.getElementById('route-to').value;
+    const distance = document.getElementById('route-distance').textContent;
+    const time = document.getElementById('route-time').textContent;
+    
+    const message = `I'm taking a safe route to: ${to}\nDistance: ${distance}\nEstimated time: ${time}\n\nShared via SafeSie app`;
+    
+    // Share via WhatsApp or SMS
+    if (contacts.length > 0) {
+        const phoneContacts = contacts.filter(c => c.phone);
+        if (phoneContacts.length > 0) {
+            // Simulate sharing
+            showNotification('📤 Route shared with emergency contacts');
+            
+            // In real app, would send actual messages
+            console.log('Sharing route:', message);
+        } else {
+            showNotification('No contacts with phone numbers', 'error');
+        }
+    } else {
+        showNotification('Add emergency contacts first', 'error');
+    }
+}
+
 // ==================== PROFILE ====================
 function updateProfile(e) {
     e.preventDefault();

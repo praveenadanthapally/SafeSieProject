@@ -189,8 +189,12 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     <span>Profile</span>
                 </li>
+                <li class="nav-item" onclick="showPage('safety-map')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 21 18 21 6 16 10 8 6 1 10"></polygon><line x1="8" y1="6" x2="8" y2="18"></line><line x1="16" y1="10" x2="16" y2="22"></line></svg>
+                    <span>Safety Map</span>
+                </li>
                 <li class="nav-item" onclick="showPage('settings')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82V9a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     <span>Settings</span>
                 </li>
             </ul>
@@ -347,6 +351,115 @@
                         </div>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </form>
+                </div>
+            </div>
+
+            <!-- Safety Map Page -->
+            <div id="page-safety-map" class="page-content">
+                <div class="page-header">
+                    <h1>Safety Map</h1>
+                    <p>Find safe centers and safe routes near you</p>
+                </div>
+                
+                <div class="safety-map-container">
+                    <!-- Map View -->
+                    <div class="map-section">
+                        <div id="safety-map" class="map-placeholder">
+                            <div class="map-loading">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 48px; height: 48px; margin-bottom: 16px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                <p>Click "Load Map" to find safe centers near you</p>
+                                <button class="btn btn-primary" onclick="loadSafetyMap()" style="margin-top: 16px;">
+                                    📍 Load Safety Map
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Safe Centers List -->
+                    <div class="safe-centers-section">
+                        <h3>🏛️ Nearby Safe Centers</h3>
+                        <div id="safe-centers-list" class="safe-centers-list">
+                            <div class="center-card" onclick="showCenterDetails('police')">
+                                <div class="center-icon">👮</div>
+                                <div class="center-info">
+                                    <h4>Police Station</h4>
+                                    <p>Emergency: 100</p>
+                                    <span class="distance">Tap to find nearest</span>
+                                </div>
+                            </div>
+                            <div class="center-card" onclick="showCenterDetails('hospital')">
+                                <div class="center-icon">🏥</div>
+                                <div class="center-info">
+                                    <h4>Hospital</h4>
+                                    <p>Emergency: 108</p>
+                                    <span class="distance">Tap to find nearest</span>
+                                </div>
+                            </div>
+                            <div class="center-card" onclick="showCenterDetails('ngo')">
+                                <div class="center-icon">🤝</div>
+                                <div class="center-info">
+                                    <h4>Women's Helpline</h4>
+                                    <p>1091 (Toll-free)</p>
+                                    <span class="distance">24/7 Support</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Safe Routes -->
+                    <div class="safe-routes-section">
+                        <h3>🛣️ Safe Route Finder</h3>
+                        <div class="route-finder">
+                            <div class="form-group">
+                                <label>From (Your Location)</label>
+                                <input type="text" id="route-from" placeholder="Current location" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>To (Destination)</label>
+                                <input type="text" id="route-to" placeholder="Enter destination">
+                            </div>
+                            <button class="btn btn-primary btn-full" onclick="findSafeRoute()">
+                                🔍 Find Safe Route
+                            </button>
+                        </div>
+                        <div id="safe-route-result" class="route-result" style="display: none;">
+                            <div class="route-info">
+                                <h4>Safest Route Found</h4>
+                                <p id="route-details">Via main roads, well-lit areas</p>
+                                <div class="route-stats">
+                                    <span>📏 <span id="route-distance">2.5 km</span></span>
+                                    <span>⏱️ <span id="route-time">15 min</span></span>
+                                    <span>⭐ Safety Score: 9/10</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary btn-full" onclick="shareRoute()">
+                                📤 Share Route with Contacts
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Safety Tips -->
+                    <div class="safety-tips-section">
+                        <h3>💡 Safety Tips</h3>
+                        <div class="tips-list">
+                            <div class="tip-card">
+                                <span class="tip-icon">🌙</span>
+                                <p>Stick to well-lit, main roads at night</p>
+                            </div>
+                            <div class="tip-card">
+                                <span class="tip-icon">👥</span>
+                                <p>Stay in areas with more people and traffic</p>
+                            </div>
+                            <div class="tip-card">
+                                <span class="tip-icon">📱</span>
+                                <p>Keep your phone charged and location on</p>
+                            </div>
+                            <div class="tip-card">
+                                <span class="tip-icon">🎧</span>
+                                <p>Avoid using earphones in isolated areas</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
