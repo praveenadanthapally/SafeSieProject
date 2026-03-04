@@ -4,6 +4,7 @@
 let currentUser = null;
 let isListening = false;
 let recognition = null;
+let voiceTriggerInterval = null; // For periodic restart
 
 // Default data for new users
 const defaultContacts = [
@@ -267,6 +268,12 @@ function logout() {
     localStorage.removeItem(CURRENT_USER_KEY);
     stopVoiceTrigger();
     
+    // Clear periodic restart
+    if (voiceTriggerInterval) {
+        clearInterval(voiceTriggerInterval);
+        voiceTriggerInterval = null;
+    }
+    
     // Reset data
     contacts = [];
     alerts = [];
@@ -355,9 +362,71 @@ async function autoStartVoiceTrigger() {
         
         showNotification('🎤 Voice trigger ACTIVE. Say "Help me"!');
         
+        // Set up periodic restart to keep it working
+        setupPeriodicRestart();
+        
     } catch (err) {
         console.error('❌ Auto-start failed:', err);
         showNotification('Please allow microphone access for voice trigger', 'error');
+    }
+}
+
+// Setup periodic restart of voice trigger (every 30 seconds)
+function setupPeriodicRestart() {
+    // Clear any existing interval
+    if (voiceTriggerInterval) {
+        clearInterval(voiceTriggerInterval);
+    }
+    
+    voiceTriggerInterval = setInterval(() => {
+        if (isListening && recognition) {
+            console.log('🔄 Periodic voice trigger health check...');
+            try {
+                // Check if recognition is still running
+                // If not, restart it
+                if (!isListening) {
+                    console.log('🔄 Voice trigger stopped, restarting...');
+                    restartVoiceTrigger();
+                }
+            } catch (e) {
+                console.log('❌ Health check error:', e);
+            }
+        }
+    }, 30000); // Check every 30 seconds
+    
+    console.log('✅ Periodic restart setup (every 30s)');
+}
+
+// Manual restart function
+function restartVoiceTrigger() {
+    console.log('🔄 Manual voice trigger restart...');
+    
+    if (recognition) {
+        try {
+            recognition.stop();
+        } catch (e) {
+            // Ignore errors when stopping
+        }
+    }
+    
+    // Re-initialize and start
+    initSpeechRecognition();
+    
+    if (recognition) {
+        try {
+            isListening = true;
+            recognition.start();
+            console.log('✅ Voice trigger restarted');
+            showNotification('🎤 Voice trigger restarted', 'info');
+            
+            // Update UI
+            const indicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            if (indicator) indicator.classList.add('active');
+            if (statusText) statusText.textContent = 'Voice Trigger: ON - Always Listening...';
+        } catch (e) {
+            console.error('❌ Failed to restart:', e);
+        }
     }
 }
 

@@ -197,11 +197,16 @@
                 <!-- Voice Trigger Section -->
                 <div class="voice-trigger-section">
                     <div class="trigger-card always-listening">
-                        <div class="always-listening-badge">
-                            <span class="pulse-dot"></span>
-                            ALWAYS LISTENING
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <div class="always-listening-badge">
+                                <span class="pulse-dot"></span>
+                                ALWAYS LISTENING
+                            </div>
+                            <button class="btn btn-secondary btn-sm" onclick="restartVoiceTrigger()" title="Restart if voice trigger stops working">
+                                🔄 Restart
+                            </button>
                         </div>
-                        <div class="trigger-status" id="trigger-status">
+                        <div class="trigger-status" id="trigger-status" style="margin-bottom: 12px;">
                             <div class="status-indicator" id="status-indicator"></div>
                             <span id="status-text">Voice Trigger: Initializing...</span>
                         </div>
